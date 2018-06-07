@@ -192,7 +192,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
             Picasso.with(ArticleListActivity.this)
                     .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
-                    .placeholder(getResources().getDrawable(R.drawable.ic_placeholder))
+                    //.placeholder(getResources().getDrawable(R.drawable.ic_placeholder))
                     .into(new Target() {
                         @Override
                         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
