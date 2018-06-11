@@ -1,11 +1,11 @@
 package com.example.xyzreader.ui.list;
 
-import android.app.LoaderManager;
+import android.support.v4.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Loader;
+import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
@@ -68,7 +68,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         mListBinding.swipeRefreshLayout.setOnRefreshListener(this);
 
-        getLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
             refresh();
