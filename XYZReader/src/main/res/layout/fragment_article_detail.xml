@@ -1,45 +1,8 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
 <android.support.v4.widget.NestedScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/meta_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#333"
-            android:fitsSystemWindows="true"
-            android:orientation="vertical"
-            android:paddingLeft="@dimen/detail_inner_horiz_margin"
-            android:paddingRight="@dimen/detail_inner_horiz_margin"
-            android:paddingTop="@dimen/detail_metabar_vert_padding"
-            app:layout_scrollFlags="scroll|snap">
-
-            <TextView
-                android:id="@+id/article_title"
-                style="?android:attr/textAppearanceLarge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:paddingBottom="@dimen/detail_metabar_title_bottom_padding"
-                android:textColor="#fff"
-                android:textSize="@dimen/detail_title_text_size"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/article_byline"
-                style="?android:attr/textAppearanceSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#8fff" />
-        </LinearLayout>
 
         <TextView
             android:id="@+id/article_body"
@@ -53,8 +16,6 @@
             android:textColor="@color/ltgray"
             android:textColorLink="@color/colorAccent"
             android:textSize="@dimen/detail_body_text_size" />
-
-    </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
 
 </layout>

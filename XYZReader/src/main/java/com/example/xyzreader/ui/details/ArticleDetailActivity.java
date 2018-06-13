@@ -1,10 +1,11 @@
 package com.example.xyzreader.ui.details;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintSet;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
@@ -17,20 +18,24 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
+import android.text.Html;
+import android.text.format.DateUtils;
+import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.databinding.ActivityArticleDetailBinding;
-import com.example.xyzreader.ui.ImageLoaderHelper;
-import com.example.xyzreader.ui.list.ArticleListActivity;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 /**
@@ -38,12 +43,17 @@ import java.util.Locale;
  */
 public class ArticleDetailActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final String TAG = ArticleDetailActivity.class.getSimpleName();
 
     private Cursor mCursor;
     private long mStartId;
 
     private ActivityArticleDetailBinding binding;
     private MyPagerAdapter mPagerAdapter;
+
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss", Locale.getDefault());
+    private SimpleDateFormat outputFormat = new SimpleDateFormat();
+    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +67,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
+           // actionBar.setTitle(null);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -72,6 +83,11 @@ public class ArticleDetailActivity extends AppCompatActivity
         binding.pager.setPageMargin((int) TypedValue
                 .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()));
         binding.pager.setPageMarginDrawable(new ColorDrawable(0x22000000));
+
+        binding.shareFab.setOnClickListener(view -> startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(this)
+                .setType("text/plain")
+                .setText("Some sample text")
+                .getIntent(), getString(R.string.action_share))));
 
         if (savedInstanceState == null) {
             if (getIntent() != null && getIntent().getData() != null) {
@@ -100,7 +116,7 @@ public class ArticleDetailActivity extends AppCompatActivity
                     final int position = mCursor.getPosition();
                     binding.pager.setCurrentItem(position, false);
 
-                    bindArticleImage();
+                    bindViews();
                     break;
                 }
                 mCursor.moveToNext();
@@ -115,8 +131,45 @@ public class ArticleDetailActivity extends AppCompatActivity
         mPagerAdapter.notifyDataSetChanged();
     }
 
-    private void bindArticleImage() {
+    private Date parsePublishedDate() {
+        try {
+            String date = mCursor.getString(ArticleLoader.Query.PUBLISHED_DATE);
+            return dateFormat.parse(date);
+        } catch (ParseException ex) {
+            Log.e(TAG, ex.getMessage());
+            Log.i(TAG, "passing today's date");
+            return new Date();
+        }
+    }
+
+    private void bindViews() {
         if (mCursor != null) {
+            binding.collapsingToolbar.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
+            binding.collapsingToolbar.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
+
+            binding.articleByline.setMovementMethod(new LinkMovementMethod());
+            binding.getRoot().setAlpha(0);
+            binding.getRoot().setVisibility(View.VISIBLE);
+            binding.getRoot().animate().alpha(1);
+            binding.articleTitle.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+            Date publishedDate = parsePublishedDate();
+            if (!publishedDate.before(START_OF_EPOCH.getTime())) {
+                binding.articleByline.setText(Html.fromHtml(
+                        DateUtils.getRelativeTimeSpanString(
+                                publishedDate.getTime(),
+                                System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
+                                DateUtils.FORMAT_ABBREV_ALL).toString()
+                                + " by <font color='#ffffff'>"
+                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
+                                + "</font>"));
+
+            } else {
+                // If date is before 1902, just show the string
+                binding.articleByline.setText(Html.fromHtml(
+                        outputFormat.format(publishedDate) + " by <font color='#ffffff'>"
+                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
+                                + "</font>"));
+            }
             Picasso.with(this)
                     .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
                     //.placeholder(getResources().getDrawable(R.drawable.ic_placeholder))
@@ -124,6 +177,10 @@ public class ArticleDetailActivity extends AppCompatActivity
                         @Override
                         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                             binding.photo.setImageBitmap(bitmap);
+
+                            Palette p = Palette.generate(bitmap, 12);
+                            int mutedColor = p.getDarkMutedColor(0xFF333333);
+                           // binding.metaBar.setBackgroundColor(mutedColor);
                         }
 
                         @Override
@@ -136,6 +193,10 @@ public class ArticleDetailActivity extends AppCompatActivity
 
                         }
                     });
+        } else {
+            binding.getRoot().setVisibility(View.GONE);
+            binding.articleTitle.setText("N/A");
+            binding.articleByline.setText("N/A");
         }
     }
 
@@ -147,7 +208,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         @Override
         public Fragment getItem(int position) {
             mCursor.moveToPosition(position);
-            return ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID));
+            return ArticleDetailFragment.newInstance(mCursor.getString(ArticleLoader.Query.BODY));
         }
 
         @Override
