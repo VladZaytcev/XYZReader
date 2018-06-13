@@ -1,6 +1,9 @@
 package com.example.xyzreader.ui.details;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintSet;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.database.Cursor;
@@ -11,14 +14,24 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.util.TypedValue;
 import android.view.View;
 
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.databinding.ActivityArticleDetailBinding;
+import com.example.xyzreader.ui.ImageLoaderHelper;
+import com.example.xyzreader.ui.list.ArticleListActivity;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
+import java.util.Locale;
 
 /**
  * An activity representing a single Article detail screen, letting you swipe between articles.
@@ -38,6 +51,13 @@ public class ArticleDetailActivity extends AppCompatActivity
         setContentView(R.layout.activity_article_detail);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_article_detail);
+
+        setSupportActionBar(binding.toolbar);
+        ActionBar actionBar = this.getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(
@@ -79,6 +99,8 @@ public class ArticleDetailActivity extends AppCompatActivity
                 if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
                     final int position = mCursor.getPosition();
                     binding.pager.setCurrentItem(position, false);
+
+                    bindArticleImage();
                     break;
                 }
                 mCursor.moveToNext();
@@ -91,6 +113,30 @@ public class ArticleDetailActivity extends AppCompatActivity
     public void onLoaderReset(@NonNull Loader<Cursor> cursorLoader) {
         mCursor = null;
         mPagerAdapter.notifyDataSetChanged();
+    }
+
+    private void bindArticleImage() {
+        if (mCursor != null) {
+            Picasso.with(this)
+                    .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
+                    //.placeholder(getResources().getDrawable(R.drawable.ic_placeholder))
+                    .into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            binding.photo.setImageBitmap(bitmap);
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                        }
+                    });
+        }
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
