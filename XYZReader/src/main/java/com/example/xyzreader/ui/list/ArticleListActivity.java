@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintSet;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -65,6 +66,9 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
         mListBinding = DataBindingUtil.setContentView(this, R.layout.activity_article_list);
+
+        setSupportActionBar( mListBinding.toolbar);
+        mListBinding.collapsingToolbar.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
 
         mListBinding.swipeRefreshLayout.setOnRefreshListener(this);
 
