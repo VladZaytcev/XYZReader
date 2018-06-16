@@ -1,5 +1,8 @@
 package com.example.xyzreader.ui.list;
 
+import android.os.Build;
+import android.support.transition.Fade;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintSet;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,10 +24,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.Html;
 import android.text.format.DateUtils;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
@@ -64,10 +70,12 @@ public class ArticleListActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupWindowAnimations();
         setContentView(R.layout.activity_article_list);
-        mListBinding = DataBindingUtil.setContentView(this, R.layout.activity_article_list);
 
-        setSupportActionBar( mListBinding.toolbar);
+        mListBinding = DataBindingUtil.setContentView(this, R.layout.activity_article_list);
+        setSupportActionBar(mListBinding.toolbar);
+
         mListBinding.collapsingToolbar.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
 
         mListBinding.swipeRefreshLayout.setOnRefreshListener(this);
@@ -124,6 +132,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         StaggeredGridLayoutManager sglm =
                 new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
         mListBinding.recyclerView.setLayoutManager(sglm);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -134,6 +143,13 @@ public class ArticleListActivity extends AppCompatActivity implements
     @Override
     public void onRefresh() {
         refresh();
+    }
+
+    private void setupWindowAnimations() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.activity_explode));
+            getWindow().setEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.activity_fade));
+        }
     }
 
     private class ArticleAdapter extends RecyclerView.Adapter<ViewHolder> {
@@ -157,8 +173,20 @@ public class ArticleListActivity extends AppCompatActivity implements
                     .inflate(LayoutInflater.from(parent.getContext()), R.layout.list_item_article,
                             parent, false);
             final ViewHolder vh = new ViewHolder(mItemBinding);
-            mItemBinding.getRoot().setOnClickListener(view -> startActivity(new Intent(Intent.ACTION_VIEW,
-                    ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())))));
+            mItemBinding.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            ArticleListActivity.this,
+                            new Pair<View, String>((View) mItemBinding.thumbnail,
+                                    getResources().getString(R.string.transition_image)),
+                            new Pair<View, String>((View) mItemBinding.articleTitle,
+                                    getResources().getString(R.string.transition_title)));
+                    startActivity(intent, options.toBundle());
+                }
+            });
             return vh;
         }
 
@@ -196,7 +224,6 @@ public class ArticleListActivity extends AppCompatActivity implements
 
             Picasso.with(ArticleListActivity.this)
                     .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
-                    //.placeholder(getResources().getDrawable(R.drawable.ic_placeholder))
                     .into(new Target() {
                         @Override
                         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {

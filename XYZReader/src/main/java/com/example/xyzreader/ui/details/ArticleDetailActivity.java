@@ -22,6 +22,7 @@ import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
@@ -73,6 +74,8 @@ public class ArticleDetailActivity extends AppCompatActivity
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.activity_explode));
+
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
                             View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
@@ -210,7 +213,7 @@ public class ArticleDetailActivity extends AppCompatActivity
 
                             Palette p = Palette.generate(bitmap, 12);
                             int mutedColor = p.getDarkMutedColor(0xFF333333);
-                           // binding.metaBar.setBackgroundColor(mutedColor);
+                            // binding.metaBar.setBackgroundColor(mutedColor);
                         }
 
                         @Override

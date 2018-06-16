@@ -24,14 +24,6 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="Theme.Bacon" parent="@style/Theme.AppCompat.Light.NoActionBar">
-
-    </style>
-
-    <style name="Theme.Bacon.Detail">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-    </style>
-
     <style name="appTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="appTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

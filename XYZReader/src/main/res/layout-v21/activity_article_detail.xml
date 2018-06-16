@@ -13,6 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
+            android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.Dark"
             app:toolbarId="@+id/toolbar">
 
@@ -31,7 +32,7 @@
 
                     <ImageView
                         android:id="@+id/photo"
-                        android:contentDescription="@string/cd_image"
+                        android:transitionName="@string/transition_image"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:scaleType="centerCrop" />
@@ -60,6 +61,7 @@
                         style="?android:attr/textAppearanceLarge"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:transitionName="@string/transition_title"
                         android:fontFamily="sans-serif-condensed"
                         android:paddingBottom="@dimen/detail_metabar_title_bottom_padding"
                         android:textColor="#fff"
@@ -97,6 +99,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
+            android:elevation="6dp"
             android:src="@drawable/ic_share"
             app:layout_anchor="@+id/appbar"
             app:layout_anchorGravity="right|bottom" />
