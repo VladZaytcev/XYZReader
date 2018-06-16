@@ -1,24 +1,21 @@
 package com.example.xyzreader.ui.details;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.app.ShareCompat;
-import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.app.ShareCompat;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
@@ -33,7 +30,6 @@ import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.databinding.ActivityArticleDetailBinding;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,9 +50,9 @@ public class ArticleDetailActivity extends AppCompatActivity
     private ActivityArticleDetailBinding binding;
     private MyPagerAdapter mPagerAdapter;
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss", Locale.getDefault());
-    private SimpleDateFormat outputFormat = new SimpleDateFormat();
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss", Locale.getDefault());
+    private final SimpleDateFormat outputFormat = new SimpleDateFormat();
+    private final GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,27 +201,8 @@ public class ArticleDetailActivity extends AppCompatActivity
             }
             Picasso.with(this)
                     .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
-                    //.placeholder(getResources().getDrawable(R.drawable.ic_placeholder))
-                    .into(new Target() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            binding.photo.setImageBitmap(bitmap);
-
-                            Palette p = Palette.generate(bitmap, 12);
-                            int mutedColor = p.getDarkMutedColor(0xFF333333);
-                            // binding.metaBar.setBackgroundColor(mutedColor);
-                        }
-
-                        @Override
-                        public void onBitmapFailed(Drawable errorDrawable) {
-
-                        }
-
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                        }
-                    });
+                    .placeholder(R.drawable.empty_detail)
+                    .into(binding.photo);
         } else {
             binding.getRoot().setVisibility(View.GONE);
             binding.articleTitle.setText("N/A");

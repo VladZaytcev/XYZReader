@@ -19,7 +19,7 @@ import com.example.xyzreader.ui.list.ArticleListActivity;
  * tablets) or a {@link ArticleDetailActivity} on handsets.
  */
 public class ArticleDetailFragment extends Fragment  {
-    public static final String ARG_ITEM_ID = "item_id";
+    private static final String ARG_ITEM_ID = "item_id";
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).

@@ -21,7 +21,7 @@ allprojects {
 
     ext {
         androidSupportVersion = "27.1.1"
-        constraintLayout = "1.1.0"
+        constraintLayout = "1.1.2"
         picassoVersion='2.5.2'
     }
 }

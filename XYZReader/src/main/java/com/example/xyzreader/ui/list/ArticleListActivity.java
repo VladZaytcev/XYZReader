@@ -1,24 +1,22 @@
 package com.example.xyzreader.ui.list;
 
-import android.os.Build;
-import android.support.transition.Fade;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintSet;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -29,7 +27,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
@@ -61,11 +58,11 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     private static final String TAG = ArticleListActivity.class.toString();
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss", Locale.getDefault());
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss", Locale.getDefault());
     // Use default locale format
-    private SimpleDateFormat outputFormat = new SimpleDateFormat();
+    private final SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
+    private final GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +102,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         unregisterReceiver(mRefreshingReceiver);
     }
 
-    private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
@@ -118,13 +115,14 @@ public class ArticleListActivity extends AppCompatActivity implements
         mListBinding.swipeRefreshLayout.setRefreshing(isRefreshing);
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         return ArticleLoader.newAllArticlesInstance(this);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+    public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader, Cursor cursor) {
         ArticleAdapter adapter = new ArticleAdapter(cursor);
         adapter.setHasStableIds(true);
         mListBinding.recyclerView.setAdapter(adapter);
@@ -136,7 +134,7 @@ public class ArticleListActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         mListBinding.recyclerView.setAdapter(null);
     }
 
@@ -153,7 +151,7 @@ public class ArticleListActivity extends AppCompatActivity implements
     }
 
     private class ArticleAdapter extends RecyclerView.Adapter<ViewHolder> {
-        private Cursor mCursor;
+        private final Cursor mCursor;
         private ListItemArticleBinding mItemBinding;
 
         ArticleAdapter(Cursor cursor) {
@@ -173,19 +171,16 @@ public class ArticleListActivity extends AppCompatActivity implements
                     .inflate(LayoutInflater.from(parent.getContext()), R.layout.list_item_article,
                             parent, false);
             final ViewHolder vh = new ViewHolder(mItemBinding);
-            mItemBinding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                            ArticleListActivity.this,
-                            new Pair<View, String>((View) mItemBinding.thumbnail,
-                                    getResources().getString(R.string.transition_image)),
-                            new Pair<View, String>((View) mItemBinding.articleTitle,
-                                    getResources().getString(R.string.transition_title)));
-                    startActivity(intent, options.toBundle());
-                }
+            mItemBinding.getRoot().setOnClickListener(view -> {
+                Intent intent = new Intent(Intent.ACTION_VIEW,
+                        ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        ArticleListActivity.this,
+                        new Pair<>(mItemBinding.thumbnail,
+                                getResources().getString(R.string.transition_image)),
+                        new Pair<>(mItemBinding.articleTitle,
+                                getResources().getString(R.string.transition_title)));
+                startActivity(intent, options.toBundle());
             });
             return vh;
         }
@@ -224,6 +219,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
             Picasso.with(ArticleListActivity.this)
                     .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
+                    .placeholder(R.drawable.empty_detail)
                     .into(new Target() {
                         @Override
                         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
