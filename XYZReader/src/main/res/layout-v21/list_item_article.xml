@@ -5,15 +5,9 @@
         android:id="@+id/main_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginTop="4dp"
-        android:elevation="8dp"
-        android:clickable="true"
-        android:visibility="gone"
-        android:focusable="true"
-        android:foreground="?selectableItemBackground">
+        android:layout_margin="4dp"
+        app:cardElevation="4dp"
+        android:visibility="gone">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/constraint_container"
@@ -25,9 +19,9 @@
                 android:id="@+id/thumbnail"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:transitionName="@string/transition_image"
                 android:background="@color/photo_placeholder"
                 android:scaleType="centerCrop"
+                android:transitionName="@string/transition_image"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -45,31 +39,31 @@
 
             <TextView
                 android:id="@+id/article_title"
-                android:transitionName="@string/transition_title"
                 style="@style/TextAppearance.AppCompat.Small"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
                 android:ellipsize="end"
                 android:maxLines="4"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:transitionName="@string/transition_title"
                 app:layout_constraintBottom_toTopOf="@+id/article_subtitle" />
 
             <TextView
                 android:id="@+id/article_subtitle"
-                android:textColor="@android:color/white"
                 style="@style/TextAppearance.AppCompat.Small"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
                 android:ellipsize="end"
                 android:maxLines="2"
+                android:textColor="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="@+id/thumbnail" />
 
             <android.support.constraint.Group

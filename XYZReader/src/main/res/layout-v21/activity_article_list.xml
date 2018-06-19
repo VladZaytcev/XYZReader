@@ -8,7 +8,7 @@
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="112dp"
-            android:elevation="4dp"
+            android:stateListAnimator="@animator/appbar_elevation"
             android:theme="@style/ThemeOverlay.AppCompat.Dark"
             android:fitsSystemWindows="true">
 
